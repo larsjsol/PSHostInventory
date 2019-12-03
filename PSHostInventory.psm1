@@ -60,11 +60,18 @@ class OpenDCIMInventory : Inventory
 {
     [String]$TypeName = "openDCIM"
     [Uri]$APIURI
-    [String]$APIKey
+    [String]$APIKey = ""
+    [String]$APIUser = ""
 
     OpenDCIMInventory(){}
-    OpenDCIMInventory([string]$Name, [Uri]$APIURI, [String]$APIKey) : base ($Name)
+    OpenDCIMInventory([string]$Name, [Uri]$APIURI, [String]$APIKey, [String]$APIUser) : base ($Name)
     {
-        $this.APIURI, $this.APIKey = $APIURI, $APIKey
+        $this.APIURI, $this.APIKey, $this.APIUser = $APIURI, $APIKey, $APIUser
+    }
+    Refresh()
+    {
+        $apiuri = $this.APIURI.AbsoluteUri + "/api/v1/device"
+        $devices = (ConvertFrom-Json (Invoke-WebRequest -Headers @{ 'UserID' = $this.APIUser; 'APIKey' = $this.APIKey} ($apiuri) ).Content).device
+q
     }
 }
